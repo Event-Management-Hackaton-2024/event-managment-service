@@ -1,3 +1,17 @@
+springdoc:
+    api-docs:
+        path: /auth/api-docs
+    swagger-ui:
+        operationsSorter: method
+        path: /auth/swagger-ui-custom.html
+
+auth:
+    cors:
+        allowedOrigins: http://localhost:3000
+    token:
+        expirationInMils: '#{1000 * 60 * 60 * 24}'
+        jwtSecret: ${JWT_SECRET}
+
 server:
     port: 8080
 spring:
