@@ -1,0 +1,17 @@
+server:
+    port: 8080
+spring:
+    datasource:
+        password: ${DATABASE_PASSWORD}
+        url: jdbc:postgresql://localhost:5432/${DATABASE_NAME}?autoreconnect=true&createDatabaseIfNotExist=true&characterEncoding=utf8
+        username: ${DATABASE_USER}
+    jpa:
+        hibernate:
+            ddl-auto: update
+            naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+        show-sql: true
+    servlet:
+        multipart:
+            enabled: true
+            max-file-size: 4MB
+            max-request-size: 4MB
