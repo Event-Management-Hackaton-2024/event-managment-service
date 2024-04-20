@@ -19,7 +19,9 @@ public class RoleServiceImpl implements RoleService {
         if (roleRepository.count() == 0) {
             Role admin = setRole(RoleName.ADMIN.name());
             Role user = setRole(RoleName.USER.name());
-            roleRepository.saveAll(List.of(admin, user));
+            Role eventCreator = setRole(RoleName.EVENT_CREATOR.name());
+            Role moderator = setRole(RoleName.MODERATOR.name());
+            roleRepository.saveAll(List.of(admin, user, eventCreator, moderator));
         }
     }
 

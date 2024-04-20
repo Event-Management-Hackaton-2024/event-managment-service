@@ -8,11 +8,9 @@ import lombok.Data;
 @Data
 public class UserRequestDto {
 
-    private String firstName;
-    private String lastName;
-
     @NotBlank
     private String username;
+
     @NotBlank @Email
     private String email;
 
@@ -21,4 +19,6 @@ public class UserRequestDto {
     private String password;
 
     private String confirmPassword;
+
+    private boolean isEventCreator;
 }
