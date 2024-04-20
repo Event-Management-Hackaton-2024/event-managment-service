@@ -1,5 +1,8 @@
 package com.hackathon.netplatform.exception;
 
+import com.hackathon.netplatform.exception.image.MultipartFileContentTypeException;
+import com.hackathon.netplatform.exception.image.MultipartFileNotSelectedException;
+import com.hackathon.netplatform.exception.image.MultipartFileSizeException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -10,19 +13,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javax.naming.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import javax.naming.AuthenticationException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -49,9 +48,13 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler({
           UserAlreadyExistsException.class,
+          MultipartFileContentTypeException.class,
+          EventNotFoundException.class,
+          MultipartFileNotSelectedException.class,
+          MultipartFileSizeException.class,
           ConstraintViolationException.class,
           HttpMessageNotReadableException.class,
-          IncorrectPasswordException.class
+          IncorrectPasswordException.class,
   })
   public ResponseEntity<Object> handleBadDataExceptions(RuntimeException ex) {
     String errorMessage = ex.getMessage();
