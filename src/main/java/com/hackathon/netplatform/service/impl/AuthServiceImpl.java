@@ -54,7 +54,6 @@ public class AuthServiceImpl implements AuthService {
   @Override
   @Transactional
   public UserResponseDto registerUser(UserRequestDto userRequestDto) {
-    checkForUsernameInDatabase(userRequestDto);
     checkForEmailInDatabase(userRequestDto);
 
     User user = modelMapper.map(userRequestDto, User.class);
@@ -101,12 +100,6 @@ public class AuthServiceImpl implements AuthService {
   private void checkForEmailInDatabase(UserRequestDto userRequestDto) {
     if (userRepository.existsByEmail(userRequestDto.getEmail())) {
       throw new UserAlreadyExistsException(userRequestDto.getEmail());
-    }
-  }
-
-  private void checkForUsernameInDatabase(UserRequestDto userRequestDto) {
-    if (userRepository.existsByUsername(userRequestDto.getUsername())) {
-      throw new UserAlreadyExistsException(userRequestDto.getUsername());
     }
   }
 }

@@ -1,6 +1,9 @@
 package com.hackathon.netplatform.dto.response;
 
+import com.hackathon.netplatform.model.Interest;
 import com.hackathon.netplatform.model.Role;
+
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Data;
@@ -13,4 +16,8 @@ public class UserResponseDto {
     private String username;
     private String email;
     private Set<Role> roles;
+    private List<UUID> followers;
+    private List<Interest> skills;
+    private List<Interest> interests;
+    private String phoneNumber;
 }
