@@ -5,6 +5,7 @@ import com.hackathon.netplatform.dto.request.InterestsIdsRequest;
 import com.hackathon.netplatform.dto.response.EventInterestsResponse;
 import com.hackathon.netplatform.dto.response.EventResponseDto;
 import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
+import com.hackathon.netplatform.dto.response.UserResponseDto;
 import com.hackathon.netplatform.exception.EventNotFoundException;
 import com.hackathon.netplatform.exception.UserAlreadyParticipatingException;
 import com.hackathon.netplatform.exception.UserNotParticipatingException;
@@ -53,6 +54,13 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
+  public List<UserResponseDto> getUsersByEvent(UUID eventId) {
+    return eventRepository.findVisitorsByEventId(eventId).stream()
+        .map(user -> modelMapper.map(user, UserResponseDto.class))
+        .toList();
+  }
+
+  @Override
   public List<EventResponseDto> getAllEvents() {
     return eventRepository.findAll().stream()
         .map(event -> modelMapper.map(event, EventResponseDto.class))
@@ -60,8 +68,9 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
-  public List<EventInterestsResponse> getEventsByInterests(InterestsIdsRequest interestsIdsRequest) {
-    List<UUID> interestsIds=interestsIdsRequest.getInterestsIds();
+  public List<EventInterestsResponse> getEventsByInterests(
+      InterestsIdsRequest interestsIdsRequest) {
+    List<UUID> interestsIds = interestsIdsRequest.getInterestsIds();
     return eventRepository.findByInterestIds(interestsIds).stream()
         .map(event -> modelMapper.map(event, EventInterestsResponse.class))
         .toList();

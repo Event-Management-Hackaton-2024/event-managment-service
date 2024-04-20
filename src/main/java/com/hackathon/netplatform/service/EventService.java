@@ -5,6 +5,7 @@ import com.hackathon.netplatform.dto.request.InterestsIdsRequest;
 import com.hackathon.netplatform.dto.response.EventInterestsResponse;
 import com.hackathon.netplatform.dto.response.EventResponseDto;
 import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
+import com.hackathon.netplatform.dto.response.UserResponseDto;
 import com.hackathon.netplatform.model.Event;
 
 import java.util.List;
@@ -14,6 +15,8 @@ public interface EventService {
   EventResponseDto createEvent(EventRequestDto eventRequestDto);
 
   EventResponseDto getEvent(UUID id);
+
+  List<UserResponseDto> getUsersByEvent(UUID id);
 
   List<EventResponseDto> getAllEvents();
 
