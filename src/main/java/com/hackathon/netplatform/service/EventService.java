@@ -7,6 +7,7 @@ import com.hackathon.netplatform.dto.response.EventResponseDto;
 import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
 import com.hackathon.netplatform.dto.response.UserResponseDto;
 import com.hackathon.netplatform.model.Event;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,7 @@ public interface EventService {
   List<UserResponseDto> getUsersByEvent(UUID id);
 
   List<EventResponseDto> getAllEvents();
+  Page<EventResponseDto> getAllEventsByPagination(int offset,int pageSize);
 
   List<EventInterestsResponse> getEventsByInterests(InterestsIdsRequest interests);
 
