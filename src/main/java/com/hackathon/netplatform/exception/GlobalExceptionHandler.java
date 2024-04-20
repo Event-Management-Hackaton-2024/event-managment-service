@@ -1,5 +1,6 @@
 package com.hackathon.netplatform.exception;
 
+import com.hackathon.netplatform.exception.image.ImageNotFoundException;
 import com.hackathon.netplatform.exception.image.MultipartFileContentTypeException;
 import com.hackathon.netplatform.exception.image.MultipartFileNotSelectedException;
 import com.hackathon.netplatform.exception.image.MultipartFileSizeException;
@@ -57,6 +58,7 @@ public class GlobalExceptionHandler {
           ConstraintViolationException.class,
           HttpMessageNotReadableException.class,
           IncorrectPasswordException.class,
+          ImageNotFoundException.class
   })
   public ResponseEntity<Object> handleBadDataExceptions(RuntimeException ex) {
     String errorMessage = ex.getMessage();
