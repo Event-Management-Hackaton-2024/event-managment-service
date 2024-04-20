@@ -1,6 +1,7 @@
 package com.hackathon.netplatform.service.impl;
 
 import com.hackathon.netplatform.dto.request.EditUserRequestDto;
+import com.hackathon.netplatform.dto.request.InterestsIdsRequest;
 import com.hackathon.netplatform.dto.response.UserResponseDto;
 import com.hackathon.netplatform.exception.NoAuthenticatedUserException;
 import com.hackathon.netplatform.exception.UserNotFoundException;
@@ -100,6 +101,37 @@ public class UserServiceImpl implements UserService {
   @Override
   public User getUserById(UUID id) {
     return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+  }
+
+  @Override
+  public List<UserResponseDto> getAllUsersByInterest(InterestsIdsRequest request) {
+    List<UUID> interestsIds = request.getInterestsIds();
+    List<User> usersForReturn = removeCurrentUser(userRepository.findByInterestIds(interestsIds));
+
+    return usersForReturn.stream()
+        .map(user -> modelMapper.map(user, UserResponseDto.class))
+        .toList();
+  }
+
+  @Override
+  public List<UserResponseDto> getAllUsersBySkills(InterestsIdsRequest request) {
+    List<UUID> interestsIds = request.getInterestsIds();
+    List<User> usersForReturn =
+        removeCurrentUser(userRepository.findByInterestIdsSkills(interestsIds));
+
+    return usersForReturn.stream()
+        .map(user -> modelMapper.map(user, UserResponseDto.class))
+        .toList();
+  }
+
+  private List<User> removeCurrentUser(List<User> allUsers) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    String currentUserEmail = authentication.getName();
+
+    User currentUser = getUser(currentUserEmail);
+    allUsers.remove(currentUser);
+    return allUsers;
   }
 
   private void setUserFields(EditUserRequestDto editUserRequestDto, User user) {

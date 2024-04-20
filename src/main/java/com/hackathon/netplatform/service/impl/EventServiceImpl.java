@@ -1,8 +1,11 @@
 package com.hackathon.netplatform.service.impl;
 
 import com.hackathon.netplatform.dto.request.EventRequestDto;
+import com.hackathon.netplatform.dto.request.InterestsIdsRequest;
+import com.hackathon.netplatform.dto.response.EventInterestsResponse;
 import com.hackathon.netplatform.dto.response.EventResponseDto;
 import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
+import com.hackathon.netplatform.dto.response.UserResponseDto;
 import com.hackathon.netplatform.exception.EventNotFoundException;
 import com.hackathon.netplatform.exception.UserAlreadyParticipatingException;
 import com.hackathon.netplatform.exception.UserNotParticipatingException;
@@ -17,9 +20,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -51,9 +56,37 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
+  public List<UserResponseDto> getUsersByEvent(UUID eventId) {
+    return eventRepository.findVisitorsByEventId(eventId).stream()
+        .map(user -> modelMapper.map(user, UserResponseDto.class))
+        .toList();
+  }
+
+  @Override
   public List<EventResponseDto> getAllEvents() {
     return eventRepository.findAll().stream()
         .map(event -> modelMapper.map(event, EventResponseDto.class))
+        .toList();
+  }
+
+  @Override
+  public Page<EventResponseDto> getAllEventsByPagination(int offset, int pageSize) {
+    Page<Event> eventPage = eventRepository.findAll(PageRequest.of(offset, pageSize));
+
+    List<EventResponseDto> eventResponseList =
+        eventPage.getContent().stream()
+            .map(event -> modelMapper.map(event, EventResponseDto.class))
+            .toList();
+
+    return new PageImpl<>(eventResponseList, eventPage.getPageable(), eventPage.getTotalElements());
+  }
+
+  @Override
+  public List<EventInterestsResponse> getEventsByInterests(
+      InterestsIdsRequest interestsIdsRequest) {
+    List<UUID> interestsIds = interestsIdsRequest.getInterestsIds();
+    return eventRepository.findByInterestIds(interestsIds).stream()
+        .map(event -> modelMapper.map(event, EventInterestsResponse.class))
         .toList();
   }
 
@@ -67,7 +100,7 @@ public class EventServiceImpl implements EventService {
     Event event = getEventEntity(eventId);
     User user = userService.getUserById(userId);
     if (event.getVisitors().contains(user)) {
-      throw new UserAlreadyParticipatingException(eventId,userId);
+      throw new UserAlreadyParticipatingException(eventId, userId);
     }
     event.getVisitors().add(user);
 
@@ -80,7 +113,7 @@ public class EventServiceImpl implements EventService {
     User user = userService.getUserById(userId);
 
     if (!event.getVisitors().contains(user)) {
-      throw new UserNotParticipatingException(eventId,userId);
+      throw new UserNotParticipatingException(eventId, userId);
     }
     event.getVisitors().remove(user);
 

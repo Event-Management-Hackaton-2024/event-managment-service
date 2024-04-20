@@ -1,6 +1,7 @@
 package com.hackathon.netplatform.controller;
 
 import com.hackathon.netplatform.dto.request.EditUserRequestDto;
+import com.hackathon.netplatform.dto.request.InterestsIdsRequest;
 import com.hackathon.netplatform.dto.response.ImageResponseDto;
 import com.hackathon.netplatform.dto.response.UserResponseDto;
 import com.hackathon.netplatform.service.ImageService;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -35,6 +37,19 @@ public class UserController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteUser(@PathVariable("email") String email) {
     userService.deleteUser(email);
+  }
+
+  @Operation(summary = "Get all Users by Interests")
+  @GetMapping("/interests")
+  @ResponseStatus(HttpStatus.OK)
+  public List<UserResponseDto> getAllEventsByInterest(@RequestBody InterestsIdsRequest interestsIds) {
+    return userService.getAllUsersByInterest(interestsIds);
+  }
+  @Operation(summary = "Get all Users by skills")
+  @GetMapping("/interests/skills")
+  @ResponseStatus(HttpStatus.OK)
+  public List<UserResponseDto> getAllEventsBySkills(@RequestBody InterestsIdsRequest interestsIds) {
+    return userService.getAllUsersBySkills(interestsIds);
   }
 
   @Operation(summary = "Edit user")

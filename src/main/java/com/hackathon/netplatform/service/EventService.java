@@ -1,9 +1,13 @@
 package com.hackathon.netplatform.service;
 
 import com.hackathon.netplatform.dto.request.EventRequestDto;
+import com.hackathon.netplatform.dto.request.InterestsIdsRequest;
+import com.hackathon.netplatform.dto.response.EventInterestsResponse;
 import com.hackathon.netplatform.dto.response.EventResponseDto;
 import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
+import com.hackathon.netplatform.dto.response.UserResponseDto;
 import com.hackathon.netplatform.model.Event;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,9 +17,16 @@ public interface EventService {
 
   EventResponseDto getEvent(UUID id);
 
-  List<EventResponseDto> getAllEvents();
-  Event getEventEntity(UUID eventId);
-  EventVisitorsResponse addUserToEvent(UUID eventId, UUID userId);
-  EventVisitorsResponse removeUserFromEvent(UUID eventId,UUID userId);
+  List<UserResponseDto> getUsersByEvent(UUID id);
 
+  List<EventResponseDto> getAllEvents();
+  Page<EventResponseDto> getAllEventsByPagination(int offset,int pageSize);
+
+  List<EventInterestsResponse> getEventsByInterests(InterestsIdsRequest interests);
+
+  Event getEventEntity(UUID eventId);
+
+  EventVisitorsResponse addUserToEvent(UUID eventId, UUID userId);
+
+  EventVisitorsResponse removeUserFromEvent(UUID eventId, UUID userId);
 }

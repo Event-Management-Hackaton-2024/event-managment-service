@@ -1,9 +1,8 @@
 package com.hackathon.netplatform.controller;
 
 import com.hackathon.netplatform.dto.request.EventRequestDto;
-import com.hackathon.netplatform.dto.response.EventResponseDto;
-import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
-import com.hackathon.netplatform.dto.response.ImageResponseDto;
+import com.hackathon.netplatform.dto.request.InterestsIdsRequest;
+import com.hackathon.netplatform.dto.response.*;
 import com.hackathon.netplatform.service.EventService;
 import com.hackathon.netplatform.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +38,13 @@ public class EventController {
     return eventService.getEvent(id);
   }
 
+  @Operation(summary = "Get event users")
+  @GetMapping("/{id}/users")
+  @ResponseStatus(HttpStatus.OK)
+  public List<UserResponseDto> getEventUsers(@PathVariable("id") UUID id) {
+    return eventService.getUsersByEvent(id);
+  }
+
   @Operation(summary = "Get all events")
   @GetMapping()
   @ResponseStatus(HttpStatus.OK)
@@ -45,16 +52,35 @@ public class EventController {
     return eventService.getAllEvents();
   }
 
+  @Operation(summary = "Get all events by pagination")
+  @GetMapping("/{offset}/{pageSize}")
+  @ResponseStatus(HttpStatus.OK)
+  public Page<EventResponseDto> getAllEventsByPagination(
+      @PathVariable int offset, @PathVariable int pageSize) {
+    return eventService.getAllEventsByPagination(offset,pageSize);
+  }
+
+  @Operation(summary = "Get all events by Interests")
+  @GetMapping("/interests")
+  @ResponseStatus(HttpStatus.OK)
+  public List<EventInterestsResponse> getAllEventsByInterest(
+      @RequestBody InterestsIdsRequest interestsIds) {
+    return eventService.getEventsByInterests(interestsIds);
+  }
+
   @Operation(summary = "Add a user to event")
   @ResponseStatus(HttpStatus.OK)
   @PutMapping("{eventId}/add/{userId}")
-  public EventVisitorsResponse addUserToEvent(@PathVariable UUID eventId, @PathVariable UUID userId) {
+  public EventVisitorsResponse addUserToEvent(
+      @PathVariable UUID eventId, @PathVariable UUID userId) {
     return eventService.addUserToEvent(eventId, userId);
   }
+
   @Operation(summary = "Remove a user from event")
   @ResponseStatus(HttpStatus.OK)
   @PutMapping("{eventId}/remove/{userId}")
-  public EventVisitorsResponse removeUserFromEvent(@PathVariable UUID eventId, @PathVariable UUID userId) {
+  public EventVisitorsResponse removeUserFromEvent(
+      @PathVariable UUID eventId, @PathVariable UUID userId) {
     return eventService.removeUserFromEvent(eventId, userId);
   }
 
