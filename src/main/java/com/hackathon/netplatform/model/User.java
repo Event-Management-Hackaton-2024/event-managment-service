@@ -35,7 +35,7 @@ public class User {
       name = "users_followers",
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "follower_id"))
-  private List<User> followers;
+  private Set<User> followers;
 
   @ManyToMany
   @JoinTable(

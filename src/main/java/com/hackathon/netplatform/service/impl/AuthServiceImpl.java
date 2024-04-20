@@ -39,7 +39,11 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public AuthResponseDto authenticate(AuthRequestDto authRequestDto) {
-    userService.getUserByEmail(authRequestDto.getEmail());
+    User user = userService.getUserByEmail(authRequestDto.getEmail());
+
+    if (!bCryptPasswordEncoder.matches(authRequestDto.getPassword(), user.getPassword())) {
+      throw new IncorrectPasswordException();
+    }
 
     Authentication authentication = getAuthentication(authRequestDto);
     SecurityContextHolder.getContext().setAuthentication(authentication);

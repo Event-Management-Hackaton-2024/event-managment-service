@@ -12,8 +12,7 @@ import com.hackathon.netplatform.security.jwt.JwtUtils;
 import com.hackathon.netplatform.service.InterestService;
 import com.hackathon.netplatform.service.UserService;
 import jakarta.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
@@ -68,6 +67,40 @@ public class UserServiceImpl implements UserService {
     return modelMapper.map(user, UserResponseDto.class);
   }
 
+  @Override
+  public UserResponseDto addFollower(UUID followerId) {
+    User follower = getUserById(followerId);
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    String currentUserEmail = authentication.getName();
+
+    User currentUser = getUserByEmail(currentUserEmail);
+
+    Set<User> followers = new HashSet<>(currentUser.getFollowers());
+    followers.add(follower);
+    currentUser.setFollowers(followers);
+    userRepository.save(currentUser);
+
+    return modelMapper.map(currentUser, UserResponseDto.class);
+  }
+
+  @Override
+  public UserResponseDto unfollowUser(UUID followedUserId) {
+    User follower = getUserById(followedUserId);
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    String currentUserEmail = authentication.getName();
+
+    User currentUser = getUserByEmail(currentUserEmail);
+
+    Set<User> followers = new HashSet<>(currentUser.getFollowers());
+    followers.remove(follower);
+    currentUser.setFollowers(followers);
+    userRepository.save(currentUser);
+
+    return modelMapper.map(currentUser, UserResponseDto.class);
+  }
+
   private void setUserFields(EditUserRequestDto editUserRequestDto, User user) {
     List<Interest> userInterests = getUserInterestsFromRequest(editUserRequestDto.getInterests());
     List<Interest> userSkills = getUserInterestsFromRequest(editUserRequestDto.getSkills());
@@ -95,5 +128,9 @@ public class UserServiceImpl implements UserService {
       return authentication.getName();
     }
     throw new NoAuthenticatedUserException();
+  }
+
+  private User getUserById(UUID id) {
+    return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
   }
 }
