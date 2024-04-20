@@ -7,6 +7,7 @@ import com.hackathon.netplatform.exception.image.ImageNotFoundException;
 import com.hackathon.netplatform.exception.image.MultipartFileContentTypeException;
 import com.hackathon.netplatform.exception.image.MultipartFileNotSelectedException;
 import com.hackathon.netplatform.exception.image.MultipartFileSizeException;
+import com.hackathon.netplatform.model.Event;
 import com.hackathon.netplatform.model.Image;
 import com.hackathon.netplatform.model.User;
 import com.hackathon.netplatform.repository.ImageRepository;
@@ -42,38 +43,73 @@ public class ImageService {
   private final ModelMapper modelMapper;
   private final ImageRepository imageRepository;
   @Lazy private final UserService userService;
+  @Lazy private final EventService eventService;
 
   @Transactional
-  public ImageResponseDto uploadImage(MultipartFile multipartFile, UUID userId) throws IOException {
+  public ImageResponseDto uploadImage(MultipartFile multipartFile, UUID userId, UUID eventId)
+      throws IOException {
 
     checkFileIsSelected(multipartFile);
     checkContentType(multipartFile);
     checkFileSize(multipartFile, maxFileSize);
 
-    Path directoryPath = Path.of(folderPath + userId);
+    Path directoryPath = Path.of(folderPath + (userId != null ? userId : eventId));
     Path imagePath = createFileNamePath(multipartFile, directoryPath);
-    User user = getUser(userId);
 
-    Image image = createImageData(multipartFile, user, imagePath);
-    setUserImage(user, image);
-    saveImageToFileSystem(multipartFile, directoryPath, imagePath);
-    logger.info("Uploaded image for User id - {}. Path: {}", user.getId(), imagePath);
+    Object object = imageOwnerVerification(userId, eventId);
+    Image image = null;
+    if (object instanceof User user) {
+      image = createImageDataForUser(multipartFile, user, imagePath);
+      setImageForUser(user, image);
+      saveImageToFileSystem(multipartFile, directoryPath, imagePath);
+
+    } else if (object instanceof Event event) {
+      image = createImageDataForEvent(multipartFile, event, imagePath);
+      setImageForEvent(event, image);
+      saveImageToFileSystem(multipartFile, directoryPath, imagePath);
+    }
+    logger.info("Uploaded image for Object with id - {}. Path: {}", object, imagePath);
     return modelMapper.map(image, ImageResponseDto.class);
   }
 
   @Transactional
-  public byte[] downloadImage(UUID userid) throws IOException {
+  public byte[] downloadImageForUser(UUID userid) throws IOException {
     User user = getUser(userid);
-    checkForAttachedPicture(user);
+    checkForAttachedPictureForUser(user);
     logger.debug(
         "Downloaded image for User id - {}. File path: {}", userid, user.getImage().getFilePath());
     return Files.readAllBytes(new File(user.getImage().getFilePath()).toPath());
   }
 
   @Transactional
-  public void deleteImage(UUID userId) throws IOException {
+  public byte[] downloadImageForEvent(UUID eventId) throws IOException {
+    Event event = getEvent(eventId);
+    checkForAttachedPictureForEvent(event);
+    logger.debug(
+        "Downloaded image for Event id - {}. File path: {}",
+        eventId,
+        event.getImage().getFilePath());
+    return Files.readAllBytes(new File(event.getImage().getFilePath()).toPath());
+  }
+
+  @Transactional
+  public void deleteImageForUser(UUID userId) throws IOException {
     removeImage(getUser(userId));
     logger.info("Deleted image for User id - {}", userId);
+  }
+
+  @Transactional
+  public void deleteImageForEvent(UUID eventId) throws IOException {
+    removeImage(getEvent(eventId));
+    logger.info("Deleted image for Event id - {}", eventId);
+  }
+
+  private Object imageOwnerVerification(UUID userId, UUID eventId) {
+    if (userId != null) {
+      return getUser(userId);
+    } else if (eventId != null) {
+      return getEvent(eventId);
+    } else throw new RuntimeException("id not found ");
   }
 
   private void saveImageToFileSystem(
@@ -82,12 +118,21 @@ public class ImageService {
     Files.copy(multipartFile.getInputStream(), imagePath);
   }
 
-  private Image createImageData(MultipartFile file, User user, Path imagePath) {
+  private Image createImageDataForUser(MultipartFile file, User user, Path imagePath) {
     return imageRepository.save(
         Image.builder()
             .type(file.getContentType())
             .filePath(imagePath.toString())
             .user(user)
+            .build());
+  }
+
+  private Image createImageDataForEvent(MultipartFile file, Event event, Path imagePath) {
+    return imageRepository.save(
+        Image.builder()
+            .type(file.getContentType())
+            .filePath(imagePath.toString())
+            .event(event)
             .build());
   }
 
@@ -102,18 +147,37 @@ public class ImageService {
     return userService.getUserById(userId);
   }
 
-  private void setUserImage(User user, Image image) throws IOException {
-    if (user.getImage() != null) {
+  private Event getEvent(UUID eventId) {
+    return eventService.getEvent(eventId);
+  }
+
+  private void setImageForUser(User user, Image image) throws IOException {
+    if (user != null && user.getImage() != null) {
       removeImage(user);
     }
     user.setImage(image);
   }
 
+  private void setImageForEvent(Event event, Image image) throws IOException {
+    if (event != null && event.getImage() != null) {
+      removeImage(event);
+    }
+    event.setImage(image);
+  }
+
   private void removeImage(User user) throws IOException {
-    checkForAttachedPicture(user);
+    checkForAttachedPictureForUser(user);
     Image image = user.getImage();
     FileSystemUtils.deleteRecursively(getImageFolderPath(user));
     user.setImage(null);
+    imageRepository.delete(image);
+  }
+
+  private void removeImage(Event event) throws IOException {
+    checkForAttachedPictureForEvent(event);
+    Image image = event.getImage();
+    FileSystemUtils.deleteRecursively(getImageFolderPath(event));
+    event.setImage(null);
     imageRepository.delete(image);
   }
 
@@ -124,9 +188,23 @@ public class ImageService {
             .substring(0, user.getImage().getFilePath().indexOf(FILE_NAME)));
   }
 
-  private static void checkForAttachedPicture(User user) {
+  private static Path getImageFolderPath(Event event) {
+    return Path.of(
+        event
+            .getImage()
+            .getFilePath()
+            .substring(0, event.getImage().getFilePath().indexOf(FILE_NAME)));
+  }
+
+  private static void checkForAttachedPictureForUser(User user) {
     if (user.getImage() == null) {
       throw new ImageNotFoundException(user.getId());
+    }
+  }
+
+  private static void checkForAttachedPictureForEvent(Event event) {
+    if (event.getImage() == null) {
+      throw new ImageNotFoundException(event.getId());
     }
   }
 

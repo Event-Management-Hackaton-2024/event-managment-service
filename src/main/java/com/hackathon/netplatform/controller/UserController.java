@@ -64,20 +64,20 @@ public class UserController {
           @PathVariable("userId") @Valid UUID userId,
           @RequestParam("image") @Valid MultipartFile image)
           throws IOException {
-    return imageService.uploadImage(image, userId);
+    return imageService.uploadImage(image, userId,null);
   }
 
   @Operation(summary = "Get image of user")
   @ResponseStatus(HttpStatus.OK)
   @GetMapping(value = "/{userId}/picture", produces = "image/png")
   public byte[] getImage(@PathVariable("userId") @Valid UUID userId) throws IOException {
-    return imageService.downloadImage(userId);
+    return imageService.downloadImageForUser(userId);
   }
 
   @Operation(summary = "Delete image from file system and detach from user")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @DeleteMapping("/{userId}/picture")
   public void deleteImage(@PathVariable("userId") @Valid UUID userId) throws IOException {
-    imageService.deleteImage(userId);
+    imageService.deleteImageForUser(userId);
   }
 }

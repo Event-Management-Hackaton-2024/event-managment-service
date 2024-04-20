@@ -24,4 +24,8 @@ public class Image {
     private String filePath;
 
     @OneToOne(mappedBy = "image")
-    private User user;}
+    private User user;
+
+    @OneToOne(mappedBy = "image")
+    private Event event;
+}

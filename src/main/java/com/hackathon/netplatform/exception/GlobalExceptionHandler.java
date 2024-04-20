@@ -49,6 +49,7 @@ public class GlobalExceptionHandler {
   @ExceptionHandler({
           UserAlreadyExistsException.class,
           MultipartFileContentTypeException.class,
+          EventNotFoundException.class,
           MultipartFileNotSelectedException.class,
           MultipartFileSizeException.class,
           ConstraintViolationException.class,
