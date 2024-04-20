@@ -43,7 +43,7 @@ public class EventServiceImpl implements EventService {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String currentUserEmail = authentication.getName();
 
-    User creator = userService.getUser(currentUserEmail);
+    User creator = userService.getUserByEmail(currentUserEmail);
     Event event = setEventFields(eventRequestDto, creator);
 
     eventRepository.save(event);
