@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public interface UserService {
 
-  User getUserByEmail(String email);
+  User getUser(String email);
 
-  UserResponseDto getUserByToken(String token);
+  UserResponseDto getUserResponse(String email);
 
   void deleteUser(String email);
 

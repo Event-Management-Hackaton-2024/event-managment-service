@@ -39,7 +39,7 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public AuthResponseDto authenticate(AuthRequestDto authRequestDto) {
-    User user = userService.getUserByEmail(authRequestDto.getEmail());
+    User user = userService.getUser(authRequestDto.getEmail());
 
     if (!bCryptPasswordEncoder.matches(authRequestDto.getPassword(), user.getPassword())) {
       throw new IncorrectPasswordException();
@@ -52,6 +52,7 @@ public class AuthServiceImpl implements AuthService {
 
     AuthResponseDto authResponseDto = new AuthResponseDto();
     authResponseDto.setToken(token);
+    authResponseDto.setEmail(user.getEmail());
     return authResponseDto;
   }
 

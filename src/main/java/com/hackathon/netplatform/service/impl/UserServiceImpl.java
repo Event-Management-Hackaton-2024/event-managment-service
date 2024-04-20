@@ -8,7 +8,6 @@ import com.hackathon.netplatform.exception.UserPermissionException;
 import com.hackathon.netplatform.model.Interest;
 import com.hackathon.netplatform.model.User;
 import com.hackathon.netplatform.repository.UserRepository;
-import com.hackathon.netplatform.security.jwt.JwtUtils;
 import com.hackathon.netplatform.service.InterestService;
 import com.hackathon.netplatform.service.UserService;
 import jakarta.transaction.Transactional;
@@ -24,20 +23,17 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
-  private final JwtUtils jwtUtils;
   private final ModelMapper modelMapper;
   private final InterestService interestService;
 
   @Override
-  public User getUserByEmail(String email) {
+  public User getUser(String email) {
     return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
   }
 
   @Override
-  public UserResponseDto getUserByToken(String token) {
-    String email = jwtUtils.getUsernameFromToken(token);
-
-    User user = getUserByEmail(email);
+  public UserResponseDto getUserResponse(String email) {
+    User user = getUser(email);
     return modelMapper.map(user, UserResponseDto.class);
   }
 
@@ -53,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public UserResponseDto editUser(String email, EditUserRequestDto editUserRequestDto) {
-    User user = getUserByEmail(email);
+    User user = getUser(email);
     String currentUserEmail = getCurrentUser();
 
     if (!email.equals(currentUserEmail)) {
@@ -74,7 +70,7 @@ public class UserServiceImpl implements UserService {
 
     String currentUserEmail = authentication.getName();
 
-    User currentUser = getUserByEmail(currentUserEmail);
+    User currentUser = getUser(currentUserEmail);
 
     Set<User> followers = new HashSet<>(currentUser.getFollowers());
     followers.add(follower);
@@ -91,7 +87,7 @@ public class UserServiceImpl implements UserService {
 
     String currentUserEmail = authentication.getName();
 
-    User currentUser = getUserByEmail(currentUserEmail);
+    User currentUser = getUser(currentUserEmail);
 
     Set<User> followers = new HashSet<>(currentUser.getFollowers());
     followers.remove(follower);
@@ -105,8 +101,6 @@ public class UserServiceImpl implements UserService {
   public User getUserById(UUID id) {
     return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
   }
-
-
 
   private void setUserFields(EditUserRequestDto editUserRequestDto, User user) {
     List<Interest> userInterests = getUserInterestsFromRequest(editUserRequestDto.getInterests());
