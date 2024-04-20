@@ -8,15 +8,15 @@ import lombok.Data;
 @Data
 public class UserRequestDto {
 
-    @NotBlank @Email
-    private String email;
+  private String username;
 
-    @NotBlank()
-    @Size(min = 8, message = "Password must be at least 8 characters")
-    private String password;
+  @NotBlank @Email private String email;
 
-    @NotBlank
-    private String confirmPassword;
+  @NotBlank()
+  @Size(min = 8, message = "Password must be at least 8 characters")
+  private String password;
 
-    private boolean isEventCreator;
+  @NotBlank private String confirmPassword;
+
+  private boolean isEventCreator;
 }

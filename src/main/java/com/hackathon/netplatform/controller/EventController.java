@@ -7,13 +7,13 @@ import com.hackathon.netplatform.service.EventService;
 import com.hackathon.netplatform.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/events")
@@ -29,6 +29,19 @@ public class EventController {
   public EventResponseDto createEvent(@Valid @RequestBody EventRequestDto eventRequestDto) {
     return eventService.createEvent(eventRequestDto);
   }
+    @Operation(summary = "Get event")
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public EventResponseDto getEvent(@PathVariable("id") UUID id) {
+        return eventService.getEvent(id);
+    }
+
+    @Operation(summary = "Get all events")
+    @GetMapping()
+    @ResponseStatus(HttpStatus.OK)
+    public List<EventResponseDto> getAllEvents() {
+        return eventService.getAllEvents();
+    }
 
   @Operation(summary = "Upload new image in file system and attach to event")
   @ResponseStatus(HttpStatus.CREATED)
