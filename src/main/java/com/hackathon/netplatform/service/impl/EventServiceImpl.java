@@ -1,6 +1,8 @@
 package com.hackathon.netplatform.service.impl;
 
 import com.hackathon.netplatform.dto.request.EventRequestDto;
+import com.hackathon.netplatform.dto.request.InterestsIdsRequest;
+import com.hackathon.netplatform.dto.response.EventInterestsResponse;
 import com.hackathon.netplatform.dto.response.EventResponseDto;
 import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
 import com.hackathon.netplatform.exception.EventNotFoundException;
@@ -58,6 +60,14 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
+  public List<EventInterestsResponse> getEventsByInterests(InterestsIdsRequest interestsIdsRequest) {
+    List<UUID> interestsIds=interestsIdsRequest.getInterestsIds();
+    return eventRepository.findByInterestIds(interestsIds).stream()
+        .map(event -> modelMapper.map(event, EventInterestsResponse.class))
+        .toList();
+  }
+
+  @Override
   public Event getEventEntity(UUID eventId) {
     return eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
   }
@@ -67,7 +77,7 @@ public class EventServiceImpl implements EventService {
     Event event = getEventEntity(eventId);
     User user = userService.getUserById(userId);
     if (event.getVisitors().contains(user)) {
-      throw new UserAlreadyParticipatingException(eventId,userId);
+      throw new UserAlreadyParticipatingException(eventId, userId);
     }
     event.getVisitors().add(user);
 
@@ -80,7 +90,7 @@ public class EventServiceImpl implements EventService {
     User user = userService.getUserById(userId);
 
     if (!event.getVisitors().contains(user)) {
-      throw new UserNotParticipatingException(eventId,userId);
+      throw new UserNotParticipatingException(eventId, userId);
     }
     event.getVisitors().remove(user);
 
