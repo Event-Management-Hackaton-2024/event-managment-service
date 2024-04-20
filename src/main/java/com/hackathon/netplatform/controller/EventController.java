@@ -1,6 +1,8 @@
 package com.hackathon.netplatform.controller;
 
 import com.hackathon.netplatform.dto.request.EventRequestDto;
+import com.hackathon.netplatform.dto.request.InterestsIdsRequest;
+import com.hackathon.netplatform.dto.response.EventInterestsResponse;
 import com.hackathon.netplatform.dto.response.EventResponseDto;
 import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
 import com.hackathon.netplatform.dto.response.ImageResponseDto;
@@ -44,6 +46,14 @@ public class EventController {
   public List<EventResponseDto> getAllEvents() {
     return eventService.getAllEvents();
   }
+
+  @Operation(summary = "Get all events by Interests")
+  @GetMapping("/interests")
+  @ResponseStatus(HttpStatus.OK)
+  public List<EventInterestsResponse> getAllEventsByInterest(@RequestBody InterestsIdsRequest interestsIds) {
+    return eventService.getEventsByInterests(interestsIds);
+  }
+
 
   @Operation(summary = "Add a user to event")
   @ResponseStatus(HttpStatus.OK)
