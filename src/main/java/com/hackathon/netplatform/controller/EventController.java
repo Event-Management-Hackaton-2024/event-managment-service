@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,23 +52,35 @@ public class EventController {
     return eventService.getAllEvents();
   }
 
+  @Operation(summary = "Get all events by pagination")
+  @GetMapping("/{offset}/{pageSize}")
+  @ResponseStatus(HttpStatus.OK)
+  public Page<EventResponseDto> getAllEventsByPagination(
+      @PathVariable int offset, @PathVariable int pageSize) {
+    return eventService.getAllEventsByPagination(offset,pageSize);
+  }
+
   @Operation(summary = "Get all events by Interests")
   @GetMapping("/interests")
   @ResponseStatus(HttpStatus.OK)
-  public List<EventInterestsResponse> getAllEventsByInterest(@RequestBody InterestsIdsRequest interestsIds) {
+  public List<EventInterestsResponse> getAllEventsByInterest(
+      @RequestBody InterestsIdsRequest interestsIds) {
     return eventService.getEventsByInterests(interestsIds);
   }
 
   @Operation(summary = "Add a user to event")
   @ResponseStatus(HttpStatus.OK)
   @PutMapping("{eventId}/add/{userId}")
-  public EventVisitorsResponse addUserToEvent(@PathVariable UUID eventId, @PathVariable UUID userId) {
+  public EventVisitorsResponse addUserToEvent(
+      @PathVariable UUID eventId, @PathVariable UUID userId) {
     return eventService.addUserToEvent(eventId, userId);
   }
+
   @Operation(summary = "Remove a user from event")
   @ResponseStatus(HttpStatus.OK)
   @PutMapping("{eventId}/remove/{userId}")
-  public EventVisitorsResponse removeUserFromEvent(@PathVariable UUID eventId, @PathVariable UUID userId) {
+  public EventVisitorsResponse removeUserFromEvent(
+      @PathVariable UUID eventId, @PathVariable UUID userId) {
     return eventService.removeUserFromEvent(eventId, userId);
   }
 

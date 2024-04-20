@@ -20,9 +20,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -65,6 +67,18 @@ public class EventServiceImpl implements EventService {
     return eventRepository.findAll().stream()
         .map(event -> modelMapper.map(event, EventResponseDto.class))
         .toList();
+  }
+
+  @Override
+  public Page<EventResponseDto> getAllEventsByPagination(int offset, int pageSize) {
+    Page<Event> eventPage = eventRepository.findAll(PageRequest.of(offset, pageSize));
+
+    List<EventResponseDto> eventResponseList =
+        eventPage.getContent().stream()
+            .map(event -> modelMapper.map(event, EventResponseDto.class))
+            .toList();
+
+    return new PageImpl<>(eventResponseList, eventPage.getPageable(), eventPage.getTotalElements());
   }
 
   @Override
