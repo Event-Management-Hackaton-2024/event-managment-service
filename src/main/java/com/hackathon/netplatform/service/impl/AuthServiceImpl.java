@@ -53,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
     AuthResponseDto authResponseDto = new AuthResponseDto();
     authResponseDto.setToken(token);
     authResponseDto.setEmail(user.getEmail());
+    authResponseDto.setRole(user.getRoles());
     return authResponseDto;
   }
 
