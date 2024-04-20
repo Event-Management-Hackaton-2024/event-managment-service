@@ -2,6 +2,7 @@ package com.hackathon.netplatform.service;
 
 import static com.hackathon.netplatform.model.Image.FILE_NAME;
 
+import com.hackathon.netplatform.dto.response.EventResponseDto;
 import com.hackathon.netplatform.dto.response.ImageResponseDto;
 import com.hackathon.netplatform.exception.image.ImageNotFoundException;
 import com.hackathon.netplatform.exception.image.MultipartFileContentTypeException;
@@ -148,7 +149,7 @@ public class ImageService {
   }
 
   private Event getEvent(UUID eventId) {
-    return eventService.getEvent(eventId);
+    return eventService.getEventEntity(eventId);
   }
 
   private void setImageForUser(User user, Image image) throws IOException {
