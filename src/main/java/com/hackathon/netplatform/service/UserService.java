@@ -19,4 +19,6 @@ public interface UserService {
   UserResponseDto addFollower(UUID followerId);
 
   UserResponseDto unfollowUser(UUID followedUserId);
+
+  User getUserById(UUID id);
 }

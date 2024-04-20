@@ -80,13 +80,15 @@ public class AuthServiceImpl implements AuthService {
 
     Role role = roleService.getRole(RoleName.USER.name());
 
+    if (user.isEventCreator()) {
+      role = roleService.getRole(RoleName.EVENT_CREATOR.name());
+    }
+
     if (userRepository.count() == 0) {
       role = roleService.getRole(RoleName.ADMIN.name());
     }
 
-    if (user.isEventCreator()) {
-      role = roleService.getRole(RoleName.EVENT_CREATOR.name());
-    }
+
 
     user.setRoles(Set.of(role));
   }
