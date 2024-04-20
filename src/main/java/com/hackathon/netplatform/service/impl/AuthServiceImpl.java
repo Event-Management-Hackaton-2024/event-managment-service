@@ -39,7 +39,11 @@ public class AuthServiceImpl implements AuthService {
 
   @Override
   public AuthResponseDto authenticate(AuthRequestDto authRequestDto) {
-    userService.getUserByEmail(authRequestDto.getEmail());
+    User user = userService.getUserByEmail(authRequestDto.getEmail());
+
+    if (!bCryptPasswordEncoder.matches(authRequestDto.getPassword(), user.getPassword())) {
+      throw new IncorrectPasswordException();
+    }
 
     Authentication authentication = getAuthentication(authRequestDto);
     SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -54,7 +58,6 @@ public class AuthServiceImpl implements AuthService {
   @Override
   @Transactional
   public UserResponseDto registerUser(UserRequestDto userRequestDto) {
-    checkForUsernameInDatabase(userRequestDto);
     checkForEmailInDatabase(userRequestDto);
 
     User user = modelMapper.map(userRequestDto, User.class);
@@ -101,12 +104,6 @@ public class AuthServiceImpl implements AuthService {
   private void checkForEmailInDatabase(UserRequestDto userRequestDto) {
     if (userRepository.existsByEmail(userRequestDto.getEmail())) {
       throw new UserAlreadyExistsException(userRequestDto.getEmail());
-    }
-  }
-
-  private void checkForUsernameInDatabase(UserRequestDto userRequestDto) {
-    if (userRepository.existsByUsername(userRequestDto.getUsername())) {
-      throw new UserAlreadyExistsException(userRequestDto.getUsername());
     }
   }
 }
