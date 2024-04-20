@@ -20,7 +20,8 @@ public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-
     private String type;
     private String filePath;
-}
+
+    @OneToOne(mappedBy = "image")
+    private User user;}

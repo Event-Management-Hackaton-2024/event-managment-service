@@ -101,6 +101,13 @@ public class UserServiceImpl implements UserService {
     return modelMapper.map(currentUser, UserResponseDto.class);
   }
 
+  @Override
+  public User getUserById(UUID id) {
+    return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
+  }
+
+
+
   private void setUserFields(EditUserRequestDto editUserRequestDto, User user) {
     List<Interest> userInterests = getUserInterestsFromRequest(editUserRequestDto.getInterests());
     List<Interest> userSkills = getUserInterestsFromRequest(editUserRequestDto.getSkills());
@@ -128,9 +135,5 @@ public class UserServiceImpl implements UserService {
       return authentication.getName();
     }
     throw new NoAuthenticatedUserException();
-  }
-
-  private User getUserById(UUID id) {
-    return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(id));
   }
 }
