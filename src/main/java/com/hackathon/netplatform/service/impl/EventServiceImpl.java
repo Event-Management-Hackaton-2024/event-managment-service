@@ -2,16 +2,18 @@ package com.hackathon.netplatform.service.impl;
 
 import com.hackathon.netplatform.dto.request.EventRequestDto;
 import com.hackathon.netplatform.dto.response.EventResponseDto;
+import com.hackathon.netplatform.exception.EventNotFoundException;
 import com.hackathon.netplatform.model.Event;
 import com.hackathon.netplatform.model.Interest;
 import com.hackathon.netplatform.model.User;
 import com.hackathon.netplatform.repository.EventRepository;
-import com.hackathon.netplatform.service.AuthService;
 import com.hackathon.netplatform.service.EventService;
 import com.hackathon.netplatform.service.InterestService;
 import com.hackathon.netplatform.service.UserService;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.Authentication;
@@ -37,6 +39,22 @@ public class EventServiceImpl implements EventService {
 
     eventRepository.save(event);
     return modelMapper.map(event, EventResponseDto.class);
+  }
+
+  @Override
+  public EventResponseDto getEvent(UUID id) {
+    return modelMapper.map(getEvent(id), EventResponseDto.class);
+  }
+
+  @Override
+  public List<EventResponseDto> getAllEvents() {
+    return eventRepository.findAll().stream()
+        .map(event -> modelMapper.map(event, EventResponseDto.class))
+        .toList();
+  }
+
+  private Event getEventBuId(UUID id) {
+    return eventRepository.findById(id).orElseThrow(() -> new EventNotFoundException(id));
   }
 
   private Event setEventFields(EventRequestDto eventRequestDto, User creator) {
