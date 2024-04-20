@@ -26,10 +26,10 @@ public class UserController {
   private final ImageService imageService;
 
   @Operation(summary = "Get user from token")
-  @GetMapping("/{token}")
+  @GetMapping("/{email}")
   @ResponseStatus(HttpStatus.OK)
-  public UserResponseDto getUserFromToken(@PathVariable("token") String token) {
-    return userService.getUserByToken(token);
+  public UserResponseDto getUserByEmail(@PathVariable("email") String email) {
+    return userService.getUserResponse(email);
   }
 
   @Operation(summary = "Get all user")

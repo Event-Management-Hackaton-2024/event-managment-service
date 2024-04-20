@@ -4,19 +4,19 @@ import com.hackathon.netplatform.dto.request.EditUserRequestDto;
 import com.hackathon.netplatform.dto.request.InterestsIdsRequest;
 import com.hackathon.netplatform.dto.response.UserResponseDto;
 import com.hackathon.netplatform.model.User;
-import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
 
-  User getUserByEmail(String email);
+  User getUser(String email);
 
   List<UserResponseDto> gerAllUsersResponse();
   Page<UserResponseDto> getAllEventsByPagination(int offset, int pageSize);
 
   UserResponseDto getUserByToken(String token);
+    UserResponseDto getUserResponse(String email);
 
   void deleteUser(String email);
 

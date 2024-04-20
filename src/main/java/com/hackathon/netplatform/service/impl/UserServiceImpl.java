@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
   private final UserRepository userRepository;
-  private final JwtUtils jwtUtils;
   private final ModelMapper modelMapper;
   private final InterestService interestService;
 
@@ -56,10 +55,8 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserResponseDto getUserByToken(String token) {
-    String email = jwtUtils.getUsernameFromToken(token);
-
-    User user = getUserByEmail(email);
+  public UserResponseDto getUserResponse(String email) {
+      User user = getUserByEmail(email);
     return modelMapper.map(user, UserResponseDto.class);
   }
 
