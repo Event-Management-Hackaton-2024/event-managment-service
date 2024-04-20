@@ -2,6 +2,7 @@ package com.hackathon.netplatform.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -18,5 +19,6 @@ public class UserRequestDto {
 
   @NotBlank private String confirmPassword;
 
-  private boolean isEventCreator;
+  @NotNull
+  private Boolean isEventCreator;
 }

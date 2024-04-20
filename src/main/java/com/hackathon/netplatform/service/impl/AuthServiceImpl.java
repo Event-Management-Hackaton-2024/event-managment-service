@@ -63,7 +63,8 @@ public class AuthServiceImpl implements AuthService {
     User user = modelMapper.map(userRequestDto, User.class);
 
     setPasswordToUser(userRequestDto, user);
-    setRoleToUser(user);
+
+    setRoleToUser(user, userRequestDto);
     userRepository.save(user);
 
     return modelMapper.map(user, UserResponseDto.class);
@@ -75,20 +76,18 @@ public class AuthServiceImpl implements AuthService {
             authRequestDto.getEmail(), authRequestDto.getPassword()));
   }
 
-  private void setRoleToUser(User user) {
+  private void setRoleToUser(User user, UserRequestDto userRequestDto) {
     roleService.createRolesInDatabase();
-
     Role role = roleService.getRole(RoleName.USER.name());
 
-    if (user.isEventCreator()) {
+    if (userRequestDto.getIsEventCreator()) {
+      user.setEventCreator(true);
       role = roleService.getRole(RoleName.EVENT_CREATOR.name());
     }
 
     if (userRepository.count() == 0) {
       role = roleService.getRole(RoleName.ADMIN.name());
     }
-
-
 
     user.setRoles(Set.of(role));
   }

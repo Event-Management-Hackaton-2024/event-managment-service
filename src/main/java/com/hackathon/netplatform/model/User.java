@@ -55,7 +55,6 @@ public class User {
   @JoinColumn(name = "image_id")
   private Image image;
 
-  @Column(nullable = false)
   private boolean isEventCreator;
 
   @ManyToMany
