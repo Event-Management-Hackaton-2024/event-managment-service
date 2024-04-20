@@ -8,14 +8,14 @@ import com.hackathon.netplatform.service.ImageService;
 import com.hackathon.netplatform.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/users")
@@ -30,6 +30,21 @@ public class UserController {
   @ResponseStatus(HttpStatus.OK)
   public UserResponseDto getUserFromToken(@PathVariable("token") String token) {
     return userService.getUserByToken(token);
+  }
+
+  @Operation(summary = "Get all user")
+  @GetMapping()
+  @ResponseStatus(HttpStatus.OK)
+  public List<UserResponseDto> getAllUsers() {
+    return userService.gerAllUsersResponse();
+  }
+
+  @Operation(summary = "Get all users by pagination")
+  @GetMapping("/{offset}/{pageSize}")
+  @ResponseStatus(HttpStatus.OK)
+  public Page<UserResponseDto> getAllEventsByPagination(
+          @PathVariable int offset, @PathVariable int pageSize) {
+    return userService.getAllEventsByPagination(offset,pageSize);
   }
 
   @Operation(summary = "Delete user")

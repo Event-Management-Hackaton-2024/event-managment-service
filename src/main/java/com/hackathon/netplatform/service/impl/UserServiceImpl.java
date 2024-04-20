@@ -16,6 +16,9 @@ import jakarta.transaction.Transactional;
 import java.util.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,6 +35,24 @@ public class UserServiceImpl implements UserService {
   @Override
   public User getUserByEmail(String email) {
     return userRepository.findByEmail(email).orElseThrow(() -> new UserNotFoundException(email));
+  }
+
+  @Override
+  public List<UserResponseDto> gerAllUsersResponse() {
+    return userRepository.findAll().stream()
+        .map(user -> modelMapper.map(user, UserResponseDto.class))
+        .toList();
+  }
+
+  @Override
+  public Page<UserResponseDto> getAllEventsByPagination(int offset, int pageSize) {
+    Page<User> userPage = userRepository.findAll(PageRequest.of(offset, pageSize));
+
+    List<UserResponseDto> userResponseList =
+            userPage.getContent().stream()
+                    .map(user -> modelMapper.map(user, UserResponseDto.class))
+                    .toList();
+    return new PageImpl<>(userResponseList, userPage.getPageable(), userPage.getTotalElements());
   }
 
   @Override
