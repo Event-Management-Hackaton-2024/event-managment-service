@@ -1,9 +1,8 @@
 package com.hackathon.netplatform.controller;
 
 import com.hackathon.netplatform.dto.request.EventRequestDto;
-import com.hackathon.netplatform.dto.response.EventResponseDto;
-import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
-import com.hackathon.netplatform.dto.response.ImageResponseDto;
+import com.hackathon.netplatform.dto.request.InterestsIdsRequest;
+import com.hackathon.netplatform.dto.response.*;
 import com.hackathon.netplatform.service.EventService;
 import com.hackathon.netplatform.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,11 +37,25 @@ public class EventController {
     return eventService.getEvent(id);
   }
 
+  @Operation(summary = "Get event users")
+  @GetMapping("/{id}/users")
+  @ResponseStatus(HttpStatus.OK)
+  public List<UserResponseDto> getEventUsers(@PathVariable("id") UUID id) {
+    return eventService.getUsersByEvent(id);
+  }
+
   @Operation(summary = "Get all events")
   @GetMapping()
   @ResponseStatus(HttpStatus.OK)
   public List<EventResponseDto> getAllEvents() {
     return eventService.getAllEvents();
+  }
+
+  @Operation(summary = "Get all events by Interests")
+  @GetMapping("/interests")
+  @ResponseStatus(HttpStatus.OK)
+  public List<EventInterestsResponse> getAllEventsByInterest(@RequestBody InterestsIdsRequest interestsIds) {
+    return eventService.getEventsByInterests(interestsIds);
   }
 
   @Operation(summary = "Add a user to event")
