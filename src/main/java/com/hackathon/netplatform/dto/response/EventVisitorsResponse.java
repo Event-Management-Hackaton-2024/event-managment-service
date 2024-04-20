@@ -1,12 +1,14 @@
 package com.hackathon.netplatform.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDate;
-import java.util.UUID;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.util.Set;
+import java.util.UUID;
+
 @Data
-public class EventResponseDto {
+public class EventVisitorsResponse {
 
     private UUID id;
     private String title;
@@ -15,4 +17,6 @@ public class EventResponseDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate date;
+
+    Set<UserResponseDto> visitors;
 }

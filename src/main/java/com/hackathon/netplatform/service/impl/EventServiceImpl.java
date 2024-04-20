@@ -2,7 +2,10 @@ package com.hackathon.netplatform.service.impl;
 
 import com.hackathon.netplatform.dto.request.EventRequestDto;
 import com.hackathon.netplatform.dto.response.EventResponseDto;
+import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
 import com.hackathon.netplatform.exception.EventNotFoundException;
+import com.hackathon.netplatform.exception.UserAlreadyParticipatingException;
+import com.hackathon.netplatform.exception.UserNotParticipatingException;
 import com.hackathon.netplatform.model.Event;
 import com.hackathon.netplatform.model.Interest;
 import com.hackathon.netplatform.model.User;
@@ -59,6 +62,30 @@ public class EventServiceImpl implements EventService {
     return eventRepository.findById(eventId).orElseThrow(() -> new EventNotFoundException(eventId));
   }
 
+  @Override
+  public EventVisitorsResponse addUserToEvent(UUID eventId, UUID userId) {
+    Event event = getEventEntity(eventId);
+    User user = userService.getUserById(userId);
+    if (event.getVisitors().contains(user)) {
+      throw new UserAlreadyParticipatingException(eventId,userId);
+    }
+    event.getVisitors().add(user);
+
+    return modelMapper.map(eventRepository.save(event), EventVisitorsResponse.class);
+  }
+
+  @Override
+  public EventVisitorsResponse removeUserFromEvent(UUID eventId, UUID userId) {
+    Event event = getEventEntity(eventId);
+    User user = userService.getUserById(userId);
+
+    if (!event.getVisitors().contains(user)) {
+      throw new UserNotParticipatingException(eventId,userId);
+    }
+    event.getVisitors().remove(user);
+
+    return modelMapper.map(eventRepository.save(event), EventVisitorsResponse.class);
+  }
 
   private Event setEventFields(EventRequestDto eventRequestDto, User creator) {
     Event event = new Event();

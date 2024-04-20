@@ -2,6 +2,7 @@ package com.hackathon.netplatform.controller;
 
 import com.hackathon.netplatform.dto.request.EventRequestDto;
 import com.hackathon.netplatform.dto.response.EventResponseDto;
+import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
 import com.hackathon.netplatform.dto.response.ImageResponseDto;
 import com.hackathon.netplatform.service.EventService;
 import com.hackathon.netplatform.service.ImageService;
@@ -29,19 +30,33 @@ public class EventController {
   public EventResponseDto createEvent(@Valid @RequestBody EventRequestDto eventRequestDto) {
     return eventService.createEvent(eventRequestDto);
   }
-    @Operation(summary = "Get event")
-    @GetMapping("/{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public EventResponseDto getEvent(@PathVariable("id") UUID id) {
-        return eventService.getEvent(id);
-    }
 
-    @Operation(summary = "Get all events")
-    @GetMapping()
-    @ResponseStatus(HttpStatus.OK)
-    public List<EventResponseDto> getAllEvents() {
-        return eventService.getAllEvents();
-    }
+  @Operation(summary = "Get event")
+  @GetMapping("/{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public EventResponseDto getEvent(@PathVariable("id") UUID id) {
+    return eventService.getEvent(id);
+  }
+
+  @Operation(summary = "Get all events")
+  @GetMapping()
+  @ResponseStatus(HttpStatus.OK)
+  public List<EventResponseDto> getAllEvents() {
+    return eventService.getAllEvents();
+  }
+
+  @Operation(summary = "Add a user to event")
+  @ResponseStatus(HttpStatus.OK)
+  @PutMapping("{eventId}/add/{userId}")
+  public EventVisitorsResponse addUserToEvent(@PathVariable UUID eventId, @PathVariable UUID userId) {
+    return eventService.addUserToEvent(eventId, userId);
+  }
+  @Operation(summary = "Remove a user from event")
+  @ResponseStatus(HttpStatus.OK)
+  @PutMapping("{eventId}/remove/{userId}")
+  public EventVisitorsResponse removeUserFromEvent(@PathVariable UUID eventId, @PathVariable UUID userId) {
+    return eventService.removeUserFromEvent(eventId, userId);
+  }
 
   @Operation(summary = "Upload new image in file system and attach to event")
   @ResponseStatus(HttpStatus.CREATED)

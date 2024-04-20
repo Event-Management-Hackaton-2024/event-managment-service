@@ -2,6 +2,7 @@ package com.hackathon.netplatform.service;
 
 import com.hackathon.netplatform.dto.request.EventRequestDto;
 import com.hackathon.netplatform.dto.response.EventResponseDto;
+import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
 import com.hackathon.netplatform.model.Event;
 
 import java.util.List;
@@ -14,4 +15,7 @@ public interface EventService {
 
   List<EventResponseDto> getAllEvents();
   Event getEventEntity(UUID eventId);
+  EventVisitorsResponse addUserToEvent(UUID eventId, UUID userId);
+  EventVisitorsResponse removeUserFromEvent(UUID eventId,UUID userId);
+
 }
