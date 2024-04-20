@@ -1,13 +1,14 @@
 package com.hackathon.netplatform.model;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Set;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
-import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Getter
