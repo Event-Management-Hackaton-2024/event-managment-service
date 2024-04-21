@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
+  List<User> gerAllUsersEntity();
 
   User getUserByEmail(String email);
 

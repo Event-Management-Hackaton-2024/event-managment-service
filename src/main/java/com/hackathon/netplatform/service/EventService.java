@@ -18,7 +18,7 @@ public interface EventService {
   EventResponseDto getEvent(UUID id);
 
   List<UserResponseDto> getUsersByEvent(UUID id);
-
+  List<Event> getAllEventsEntity();
   List<EventResponseDto> getAllEvents();
   Page<EventResponseDto> getAllEventsByPagination(int offset,int pageSize);
 
@@ -27,6 +27,7 @@ public interface EventService {
   Event getEventEntity(UUID eventId);
 
   EventVisitorsResponse addUserToEvent(UUID eventId, UUID userId);
+  void deleteInterestById(UUID id);
 
   EventVisitorsResponse removeUserFromEvent(UUID eventId, UUID userId);
 }
