@@ -8,6 +8,7 @@ import com.hackathon.netplatform.model.Interest;
 import com.hackathon.netplatform.repository.InterestRepository;
 import com.hackathon.netplatform.service.InterestService;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -34,14 +35,24 @@ public class InterestServiceImpl implements InterestService {
   @Override
   public List<InterestResponseDto> findAllInterests() {
     return interestRepository.findAll().stream()
-            .map(interest -> modelMapper.map(interest, InterestResponseDto.class))
-            .toList();
+        .map(interest -> modelMapper.map(interest, InterestResponseDto.class))
+        .toList();
   }
 
   @Override
   public Interest getInterest(String name) {
-    return interestRepository.findByName(name).orElseThrow(() ->
-            new InterestNotFoundException(name));
+    return interestRepository
+        .findByName(name)
+        .orElseThrow(() -> new InterestNotFoundException(name));
   }
 
+  @Override
+  public void deleteByID(UUID id) {
+    interestRepository.deleteById(id);
+  }
+
+  @Override
+  public Interest getInterestByID(UUID id) {
+    return interestRepository.findById(id).orElseThrow(() -> new InterestNotFoundException(""));
+  }
 }

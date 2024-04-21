@@ -9,7 +9,6 @@ import com.hackathon.netplatform.exception.UserPermissionException;
 import com.hackathon.netplatform.model.Interest;
 import com.hackathon.netplatform.model.User;
 import com.hackathon.netplatform.repository.UserRepository;
-import com.hackathon.netplatform.security.jwt.JwtUtils;
 import com.hackathon.netplatform.service.InterestService;
 import com.hackathon.netplatform.service.UserService;
 import jakarta.transaction.Transactional;
@@ -42,6 +41,11 @@ public class UserServiceImpl implements UserService {
         .map(user -> modelMapper.map(user, UserResponseDto.class))
         .toList();
   }
+  @Override
+  public List<User> gerAllUsersEntity() {
+    return userRepository.findAll();
+  }
+
 
   @Override
   public Page<UserResponseDto> getAllEventsByPagination(int offset, int pageSize) {

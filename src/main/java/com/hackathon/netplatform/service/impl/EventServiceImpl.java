@@ -6,9 +6,7 @@ import com.hackathon.netplatform.dto.response.EventInterestsResponse;
 import com.hackathon.netplatform.dto.response.EventResponseDto;
 import com.hackathon.netplatform.dto.response.EventVisitorsResponse;
 import com.hackathon.netplatform.dto.response.UserResponseDto;
-import com.hackathon.netplatform.exception.EventNotFoundException;
-import com.hackathon.netplatform.exception.UserAlreadyParticipatingException;
-import com.hackathon.netplatform.exception.UserNotParticipatingException;
+import com.hackathon.netplatform.exception.*;
 import com.hackathon.netplatform.model.Event;
 import com.hackathon.netplatform.model.Interest;
 import com.hackathon.netplatform.model.User;
@@ -60,6 +58,11 @@ public class EventServiceImpl implements EventService {
     return eventRepository.findVisitorsByEventId(eventId).stream()
         .map(user -> modelMapper.map(user, UserResponseDto.class))
         .toList();
+  }
+
+  @Override
+  public List<Event> getAllEventsEntity() {
+    return eventRepository.findAll();
   }
 
   @Override
@@ -117,6 +120,28 @@ public class EventServiceImpl implements EventService {
     event.getVisitors().add(user);
 
     return modelMapper.map(eventRepository.save(event), EventVisitorsResponse.class);
+  }
+
+  @Override
+  public void deleteInterestById(UUID id) {
+    Interest interest = interestService.getInterestByID(id);
+    validateInterestIsUsed(interest);
+    interestService.deleteByID(id);
+  }
+
+  private void validateInterestIsUsed(Interest interest) {
+    List<User> users = userService.gerAllUsersEntity();
+    for (User user : users) {
+      if (user.getSkills().contains(interest) || user.getInterests().contains(interest)) {
+        throw new InterestAlreadyUsedException(interest.getId());
+      }
+    }
+    List<Event> events = getAllEventsEntity();
+    for (Event event : events) {
+      if (event.getInterests().contains(interest)) {
+        throw new InterestAlreadyUsedException(interest.getId());
+      }
+    }
   }
 
   @Override
