@@ -20,6 +20,9 @@ public interface EventService {
   List<UserResponseDto> getUsersByEvent(UUID id);
 
   List<EventResponseDto> getAllEvents();
+
+  void deleteEvent(UUID id);
+
   Page<EventResponseDto> getAllEventsByPagination(int offset,int pageSize);
 
   List<EventInterestsResponse> getEventsByInterests(InterestsIdsRequest interests);

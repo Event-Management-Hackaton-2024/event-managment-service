@@ -46,10 +46,17 @@ public class EventController {
   }
 
   @Operation(summary = "Get all events")
-  @GetMapping()
+  @GetMapping
   @ResponseStatus(HttpStatus.OK)
   public List<EventResponseDto> getAllEvents() {
     return eventService.getAllEvents();
+  }
+
+  @Operation(summary = "Delete event")
+  @DeleteMapping("/{id}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteEvent(@PathVariable("id") UUID id) {
+    eventService.deleteEvent(id);
   }
 
   @Operation(summary = "Get all events by pagination")
@@ -101,7 +108,7 @@ public class EventController {
     return imageService.downloadImageForEvent(eventId);
   }
 
-  @Operation(summary = "Delete image from file system and detach from user")
+  @Operation(summary = "Delete image from file system and detach from event")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @DeleteMapping("/{eventId}/picture")
   public void deleteImage(@PathVariable("eventId") @Valid UUID eventId) throws IOException {

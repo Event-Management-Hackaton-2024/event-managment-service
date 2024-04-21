@@ -70,6 +70,18 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
+  public void deleteEvent(UUID id) {
+    Event event = getEventEntity(id);
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String currentUserEmail = authentication.getName();
+
+    if (currentUserEmail.equals(event.getCreator().getEmail())) {
+      eventRepository.delete(event);
+    }
+  }
+
+  @Override
   public Page<EventResponseDto> getAllEventsByPagination(int offset, int pageSize) {
     Page<Event> eventPage = eventRepository.findAll(PageRequest.of(offset, pageSize));
 
